@@ -1,0 +1,79 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-mongodb-client'
+    implementation 'io.quarkus:quarkus-resteasy-mutiny'
+    implementation 'io.quarkus:quarkus-resteasy-jackson'
+    implementation 'io.quarkus:quarkus-smallrye-context-propagation'
+    implementation 'io.quarkus:quarkus-arc'
+    implementation 'io.quarkus:quarkus-resteasy'
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+    implementation 'org.projectlombok:lombok:1.18.20'
+}
+
+group 'apiGame'
+version '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+configurations {quarkusDeployment}
+dependencies {
+quarkusDeployment 'io.quarkus:quarkus-vertx-core-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-mutiny-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-mutiny-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-mutiny-reactive-streams-operators-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-apache-httpclient-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-mutiny-common-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-jackson-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-smallrye-context-propagation-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-server-common-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-arc-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-vertx-http-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-common-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-netty-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-mongodb-client-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-jackson-deployment:2.1.2.Final'
+quarkusDeployment 'io.quarkus:quarkus-resteasy-deployment:2.1.2.Final'
+}
+task listQuarkusDependencies() {
+    File f = new File('C:\\Users\\DAVID~1.URI\\AppData\\Local\\Temp\\16020653680173077592.txt')
+    f.withPrintWriter('UTF8') { writer ->
+        configurations.quarkusDeployment.files.each { writer.println it }
+        def componentIds = configurations.quarkusDeployment.incoming.resolutionResult.allDependencies.collect { it.selected.id }
+        ArtifactResolutionResult result = dependencies.createArtifactResolutionQuery()
+            .forComponents(componentIds)
+            .withArtifacts(JvmLibrary, SourcesArtifact)
+            .execute()
+        def sourceArtifacts = []
+        result.resolvedComponents.each { ComponentArtifactsResult component ->
+            Set<ArtifactResult> sources = component.getArtifacts(SourcesArtifact)
+            sources.each { ArtifactResult ar ->
+                if (ar instanceof ResolvedArtifactResult) {
+                    writer.println ar.file
+                }
+            }
+        }
+    }
+}
